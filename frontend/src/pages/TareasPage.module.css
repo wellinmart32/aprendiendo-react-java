@@ -1,0 +1,39 @@
+/* Estilos de la página de tareas */
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header {
+  padding: 30px 20px;
+  color: white;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 3em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header p {
+  margin: 10px 0 0 0;
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+.contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contenedor {
+    grid-template-columns: 1fr;
+  }
+}
