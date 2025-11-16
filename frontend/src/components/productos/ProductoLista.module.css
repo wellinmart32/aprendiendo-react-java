@@ -1,0 +1,27 @@
+/* Estilos de la lista de productos */
+.listaProductos {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.titulo {
+  margin-top: 0;
+  color: #2563eb;
+  font-size: 1.8em;
+}
+
+.sinProductos {
+  text-align: center;
+  color: #999;
+  font-size: 1.2em;
+  padding: 40px;
+}
+
+.mensajeCarga {
+  text-align: center;
+  color: #2563eb;
+  font-size: 1.1em;
+  padding: 40px;
+}

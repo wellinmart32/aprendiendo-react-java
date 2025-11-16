@@ -1,0 +1,83 @@
+/* Estilos de la página de inicio */
+.home {
+  min-height: calc(100vh - 70px);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.contenedor {
+  max-width: 1000px;
+  text-align: center;
+}
+
+.titulo {
+  color: white;
+  font-size: 3em;
+  margin: 0 0 20px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitulo {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.3em;
+  margin: 0 0 60px 0;
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.tarjeta {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.tarjeta:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.icono {
+  font-size: 4em;
+  margin-bottom: 20px;
+}
+
+.tarjeta h2 {
+  margin: 0 0 15px 0;
+  color: #667eea;
+  font-size: 1.8em;
+}
+
+.tarjeta p {
+  margin: 0;
+  color: #666;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .titulo {
+    font-size: 2em;
+  }
+
+  .subtitulo {
+    font-size: 1em;
+  }
+
+  .tarjetas {
+    grid-template-columns: 1fr;
+  }
+}
