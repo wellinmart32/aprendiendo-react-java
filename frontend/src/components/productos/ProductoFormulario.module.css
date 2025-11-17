@@ -67,3 +67,40 @@
   background: #ccc;
   cursor: not-allowed;
 }
+
+/* Estilos adicionales para el formulario de edición en modal */
+.botonesModal {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.botonesModal button {
+  flex: 1;
+}
+
+.btnCancelar {
+  padding: 12px 24px;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.btnCancelar:hover:not(:disabled) {
+  background: #4b5563;
+  transform: translateY(-2px);
+}
+
+.btnCancelar:active {
+  transform: translateY(0);
+}
+
+.btnCancelar:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

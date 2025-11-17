@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import productoService from '../../services/productoService';
+import Modal from '../common/Modal';
+import ProductoFormularioEditar from './ProductoFormularioEditar';
 import styles from './ProductoItem.module.css';
 
 /**
@@ -9,6 +11,8 @@ import styles from './ProductoItem.module.css';
  * @param {Function} onProductoEliminado - Callback cuando se elimina el producto
  */
 function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) {
+  // Estado para controlar si el modal está abierto
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   /**
    * Elimina el producto después de confirmación
@@ -31,6 +35,33 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
       console.error('Error al eliminar producto:', error);
       alert('Error al eliminar el producto');
     }
+  };
+
+  /**
+   * Abre el modal de edición
+   */
+  const handleAbrirModal = () => {
+    setModalAbierto(true);
+  };
+
+  /**
+   * Cierra el modal de edición
+   */
+  const handleCerrarModal = () => {
+    setModalAbierto(false);
+  };
+
+  /**
+   * Maneja cuando se actualiza el producto
+   */
+  const handleProductoActualizado = (productoActualizado) => {
+    // Notificar al componente padre
+    if (onProductoActualizado) {
+      onProductoActualizado(productoActualizado);
+    }
+    
+    // Cerrar el modal
+    setModalAbierto(false);
   };
 
   /**
@@ -64,40 +95,62 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
   };
 
   return (
-    <div className={styles.producto}>
-      <div className={styles.contenido}>
-        <div className={styles.header}>
-          <h3 className={styles.nombre}>{producto.nombre}</h3>
-          {producto.categoria && (
-            <span className={styles.categoria}>{producto.categoria}</span>
+    <>
+      <div className={styles.producto}>
+        <div className={styles.contenido}>
+          <div className={styles.header}>
+            <h3 className={styles.nombre}>{producto.nombre}</h3>
+            {producto.categoria && (
+              <span className={styles.categoria}>{producto.categoria}</span>
+            )}
+          </div>
+          
+          {producto.descripcion && (
+            <p className={styles.descripcion}>{producto.descripcion}</p>
           )}
+          
+          <div className={styles.info}>
+            <span className={styles.precio}>{formatearPrecio(producto.precio)}</span>
+            <span className={`${styles.stock} ${tieneStockBajo() ? styles.stockBajo : ''}`}>
+              Stock: {producto.stock}
+            </span>
+          </div>
+          
+          <small className={styles.fecha}>
+            Creado: {formatearFecha(producto.fechaCreacion)}
+          </small>
         </div>
         
-        {producto.descripcion && (
-          <p className={styles.descripcion}>{producto.descripcion}</p>
-        )}
-        
-        <div className={styles.info}>
-          <span className={styles.precio}>{formatearPrecio(producto.precio)}</span>
-          <span className={`${styles.stock} ${tieneStockBajo() ? styles.stockBajo : ''}`}>
-            Stock: {producto.stock}
-          </span>
+        <div className={styles.acciones}>
+          <button
+            onClick={handleAbrirModal}
+            className={`${styles.btn} ${styles.btnEditar}`}
+          >
+            ✏️ Editar
+          </button>
+          
+          <button
+            onClick={handleEliminar}
+            className={`${styles.btn} ${styles.btnEliminar}`}
+          >
+            🗑️ Eliminar
+          </button>
         </div>
-        
-        <small className={styles.fecha}>
-          Creado: {formatearFecha(producto.fechaCreacion)}
-        </small>
       </div>
-      
-      <div className={styles.acciones}>
-        <button
-          onClick={handleEliminar}
-          className={`${styles.btn} ${styles.btnEliminar}`}
-        >
-          🗑️ Eliminar
-        </button>
-      </div>
-    </div>
+
+      {/* Modal de edición */}
+      <Modal 
+        isOpen={modalAbierto}
+        onClose={handleCerrarModal}
+        titulo="Editar Producto"
+      >
+        <ProductoFormularioEditar
+          producto={producto}
+          onProductoActualizado={handleProductoActualizado}
+          onCancelar={handleCerrarModal}
+        />
+      </Modal>
+    </>
   );
 }
 

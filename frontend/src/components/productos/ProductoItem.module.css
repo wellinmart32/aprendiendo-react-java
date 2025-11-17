@@ -123,3 +123,12 @@
     flex: 1;
   }
 }
+
+.btnEditar {
+  background: #f59e0b;
+  color: white;
+}
+
+.btnEditar:hover {
+  background: #d97706;
+}
