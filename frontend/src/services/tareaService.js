@@ -25,24 +25,6 @@ const tareaService = {
   },
 
   /**
-   * Obtiene una tarea por su ID
-   * @param {number} id - ID de la tarea
-   * @returns {Promise<Object>} La tarea encontrada
-   */
-  obtenerPorId: async (id) => {
-    try {
-      const respuesta = await fetch(`${API_URL}/${id}`);
-      if (!respuesta.ok) {
-        throw new Error('Tarea no encontrada');
-      }
-      return await respuesta.json();
-    } catch (error) {
-      console.error('Error en obtenerPorId:', error);
-      throw error;
-    }
-  },
-
-  /**
    * Crea una nueva tarea
    * @param {Object} tarea - Datos de la tarea a crear
    * @returns {Promise<Object>} La tarea creada
@@ -64,6 +46,28 @@ const tareaService = {
       return await respuesta.json();
     } catch (error) {
       console.error('Error en crear:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Elimina una tarea
+   * @param {number} id - ID de la tarea a eliminar
+   * @returns {Promise<boolean>} true si se eliminó correctamente
+   */
+  eliminar: async (id) => {
+    try {
+      const respuesta = await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!respuesta.ok && respuesta.status !== 204) {
+        throw new Error('Error al eliminar la tarea');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error en eliminar:', error);
       throw error;
     }
   },
@@ -96,36 +100,14 @@ const tareaService = {
   },
 
   /**
-   * Elimina una tarea
-   * @param {number} id - ID de la tarea a eliminar
-   * @returns {Promise<boolean>} true si se eliminó correctamente
-   */
-  eliminar: async (id) => {
-    try {
-      const respuesta = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!respuesta.ok && respuesta.status !== 204) {
-        throw new Error('Error al eliminar la tarea');
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Error en eliminar:', error);
-      throw error;
-    }
-  },
-
-  /**
    * Marca una tarea como completada
-   * @param {number} id - ID de la tarea
+   * @param {number} id - ID de la tarea a completar
    * @returns {Promise<Object>} La tarea actualizada
    */
   completar: async (id) => {
     try {
       const respuesta = await fetch(`${API_URL}/${id}/completar`, {
-        method: 'PATCH'
+        method: 'PUT'
       });
       
       if (!respuesta.ok) {
@@ -141,13 +123,13 @@ const tareaService = {
 
   /**
    * Marca una tarea como no completada
-   * @param {number} id - ID de la tarea
+   * @param {number} id - ID de la tarea a descompletar
    * @returns {Promise<Object>} La tarea actualizada
    */
   descompletar: async (id) => {
     try {
       const respuesta = await fetch(`${API_URL}/${id}/descompletar`, {
-        method: 'PATCH'
+        method: 'PUT'
       });
       
       if (!respuesta.ok) {
