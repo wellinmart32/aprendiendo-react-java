@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import tareaService from '../../services/tareaService';
+import Modal from '../common/Modal';
+import TareaFormularioEditar from './TareaFormularioEditar';
 import styles from './TareaItem.module.css';
 
 /**
@@ -9,6 +11,8 @@ import styles from './TareaItem.module.css';
  * @param {Function} onTareaEliminada - Callback cuando se elimina la tarea
  */
 function TareaItem({ tarea, onTareaActualizada, onTareaEliminada }) {
+  // Estado para controlar si el modal está abierto
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   /**
    * Alterna el estado de completada de la tarea
@@ -59,6 +63,33 @@ function TareaItem({ tarea, onTareaActualizada, onTareaEliminada }) {
   };
 
   /**
+   * Abre el modal de edición
+   */
+  const handleAbrirModal = () => {
+    setModalAbierto(true);
+  };
+
+  /**
+   * Cierra el modal de edición
+   */
+  const handleCerrarModal = () => {
+    setModalAbierto(false);
+  };
+
+  /**
+   * Maneja cuando se actualiza la tarea
+   */
+  const handleTareaActualizada = (tareaActualizada) => {
+    // Notificar al componente padre
+    if (onTareaActualizada) {
+      onTareaActualizada(tareaActualizada);
+    }
+    
+    // Cerrar el modal
+    setModalAbierto(false);
+  };
+
+  /**
    * Formatea la fecha de creación
    */
   const formatearFecha = (fecha) => {
@@ -72,29 +103,51 @@ function TareaItem({ tarea, onTareaActualizada, onTareaEliminada }) {
   };
 
   return (
-    <div className={`${styles.tarea} ${tarea.completada ? styles.completada : ''}`}>
-      <div className={styles.contenido}>
-        <h3 className={styles.titulo}>{tarea.titulo}</h3>
-        {tarea.descripcion && <p className={styles.descripcion}>{tarea.descripcion}</p>}
-        <small className={styles.fecha}>Creada: {formatearFecha(tarea.fechaCreacion)}</small>
-      </div>
-      
-      <div className={styles.acciones}>
-        <button
-          onClick={handleToggleCompletada}
-          className={`${styles.btn} ${tarea.completada ? styles.btnDescompletar : styles.btnCompletar}`}
-        >
-          {tarea.completada ? '↩️ Descompletar' : '✅ Completar'}
-        </button>
+    <>
+      <div className={`${styles.tarea} ${tarea.completada ? styles.completada : ''}`}>
+        <div className={styles.contenido}>
+          <h3 className={styles.titulo}>{tarea.titulo}</h3>
+          {tarea.descripcion && <p className={styles.descripcion}>{tarea.descripcion}</p>}
+          <small className={styles.fecha}>Creada: {formatearFecha(tarea.fechaCreacion)}</small>
+        </div>
         
-        <button
-          onClick={handleEliminar}
-          className={`${styles.btn} ${styles.btnEliminar}`}
-        >
-          🗑️ Eliminar
-        </button>
+        <div className={styles.acciones}>
+          <button
+            onClick={handleAbrirModal}
+            className={`${styles.btn} ${styles.btnEditar}`}
+          >
+            ✏️ Editar
+          </button>
+
+          <button
+            onClick={handleToggleCompletada}
+            className={`${styles.btn} ${tarea.completada ? styles.btnDescompletar : styles.btnCompletar}`}
+          >
+            {tarea.completada ? '↩️ Descompletar' : '✅ Completar'}
+          </button>
+          
+          <button
+            onClick={handleEliminar}
+            className={`${styles.btn} ${styles.btnEliminar}`}
+          >
+            🗑️ Eliminar
+          </button>
+        </div>
       </div>
-    </div>
+
+      {/* Modal de edición */}
+      <Modal 
+        isOpen={modalAbierto}
+        onClose={handleCerrarModal}
+        titulo="Editar Tarea"
+      >
+        <TareaFormularioEditar
+          tarea={tarea}
+          onTareaActualizada={handleTareaActualizada}
+          onCancelar={handleCerrarModal}
+        />
+      </Modal>
+    </>
   );
 }
 

@@ -95,11 +95,11 @@ public class TareaController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarTarea(@PathVariable Long id) {
         // Llama al servicio para eliminar
-        boolean eliminada = tareaService.eliminarTarea(id);
+        boolean eliminado = tareaService.eliminarTarea(id);
         
         // Si se eliminó, retorna 204 No Content
         // Si no existía, retorna 404 Not Found
-        if (eliminada) {
+        if (eliminado) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
@@ -107,34 +107,44 @@ public class TareaController {
     }
     
     /**
-     * PATCH /api/tareas/{id}/completar - Marca una tarea como completada
+     * PUT /api/tareas/{id}/completar - Marca una tarea como completada
      * @param id - identificador de la tarea
      * @return la tarea actualizada, o 404 si no existe
      */
-    @PatchMapping("/{id}/completar")
+    @PutMapping("/{id}/completar")
     public ResponseEntity<Tarea> completarTarea(@PathVariable Long id) {
-        // Llama al servicio para cambiar el estado a completada (true)
-        Tarea tarea = tareaService.cambiarEstadoTarea(id, true);
+        // Obtener la tarea
+        Optional<Tarea> tareaExistente = tareaService.obtenerTareaPorId(id);
         
-        if (tarea != null) {
-            return ResponseEntity.ok(tarea);
+        if (tareaExistente.isPresent()) {
+            Tarea tarea = tareaExistente.get();
+            // Marcar como completada
+            tarea.setCompletada(true);
+            // Guardar
+            Tarea tareaActualizada = tareaService.actualizarTarea(id, tarea);
+            return ResponseEntity.ok(tareaActualizada);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
     
     /**
-     * PATCH /api/tareas/{id}/descompletar - Marca una tarea como no completada
+     * PUT /api/tareas/{id}/descompletar - Marca una tarea como no completada
      * @param id - identificador de la tarea
      * @return la tarea actualizada, o 404 si no existe
      */
-    @PatchMapping("/{id}/descompletar")
+    @PutMapping("/{id}/descompletar")
     public ResponseEntity<Tarea> descompletarTarea(@PathVariable Long id) {
-        // Llama al servicio para cambiar el estado a no completada (false)
-        Tarea tarea = tareaService.cambiarEstadoTarea(id, false);
+        // Obtener la tarea
+        Optional<Tarea> tareaExistente = tareaService.obtenerTareaPorId(id);
         
-        if (tarea != null) {
-            return ResponseEntity.ok(tarea);
+        if (tareaExistente.isPresent()) {
+            Tarea tarea = tareaExistente.get();
+            // Marcar como no completada
+            tarea.setCompletada(false);
+            // Guardar
+            Tarea tareaActualizada = tareaService.actualizarTarea(id, tarea);
+            return ResponseEntity.ok(tareaActualizada);
         } else {
             return ResponseEntity.notFound().build();
         }
