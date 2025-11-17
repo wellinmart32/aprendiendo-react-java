@@ -18,6 +18,9 @@ function ProductosPage() {
   const [soloConStock, setSoloConStock] = useState(false);
   // Estado para ordenamiento
   const [ordenamiento, setOrdenamiento] = useState('');
+  // Estados para paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [productosPorPagina, setProductosPorPagina] = useState(10);
   // Estado para indicar si se están cargando los productos
   const [cargando, setCargando] = useState(false);
   // Estado para almacenar categorías únicas
@@ -38,6 +41,9 @@ function ProductosPage() {
         .filter(c => c && c.trim() !== ''))
       ];
       setCategorias(categoriasUnicas);
+      
+      // Reiniciar a la primera página
+      setPaginaActual(1);
     } catch (error) {
       console.error('Error al cargar productos:', error);
       toast.error('❌ Error al cargar los productos');
@@ -72,6 +78,9 @@ function ProductosPage() {
       }
 
       setProductos(datos);
+      
+      // Reiniciar a la primera página cuando cambian los filtros
+      setPaginaActual(1);
     } catch (error) {
       console.error('Error al filtrar productos:', error);
       toast.error('❌ Error al filtrar productos');
@@ -151,7 +160,14 @@ function ProductosPage() {
    */
   const handleProductoEliminado = (productoId) => {
     // Eliminar el producto del estado
-    setProductos(productos.filter(producto => producto.id !== productoId));
+    const nuevosProductos = productos.filter(producto => producto.id !== productoId);
+    setProductos(nuevosProductos);
+    
+    // Ajustar página si quedó vacía
+    const totalPaginas = Math.ceil(nuevosProductos.length / productosPorPagina);
+    if (paginaActual > totalPaginas && totalPaginas > 0) {
+      setPaginaActual(totalPaginas);
+    }
   };
 
   /**
@@ -185,6 +201,14 @@ function ProductosPage() {
   };
 
   /**
+   * Maneja el cambio en productos por página
+   */
+  const handleProductosPorPaginaChange = (e) => {
+    setProductosPorPagina(Number(e.target.value));
+    setPaginaActual(1); // Reiniciar a primera página
+  };
+
+  /**
    * Limpia todos los filtros y ordenamiento
    */
   const limpiarFiltros = () => {
@@ -192,10 +216,42 @@ function ProductosPage() {
     setCategoriaFiltro('');
     setSoloConStock(false);
     setOrdenamiento('');
+    setPaginaActual(1);
   };
 
   // Aplicar ordenamiento a los productos
   const productosOrdenados = ordenarProductos(productos);
+
+  // Calcular paginación
+  const indiceUltimo = paginaActual * productosPorPagina;
+  const indicePrimero = indiceUltimo - productosPorPagina;
+  const productosPaginados = productosOrdenados.slice(indicePrimero, indiceUltimo);
+  const totalPaginas = Math.ceil(productosOrdenados.length / productosPorPagina);
+
+  /**
+   * Navega a la página anterior
+   */
+  const paginaAnterior = () => {
+    if (paginaActual > 1) {
+      setPaginaActual(paginaActual - 1);
+    }
+  };
+
+  /**
+   * Navega a la página siguiente
+   */
+  const paginaSiguiente = () => {
+    if (paginaActual < totalPaginas) {
+      setPaginaActual(paginaActual + 1);
+    }
+  };
+
+  /**
+   * Va a una página específica
+   */
+  const irAPagina = (numeroPagina) => {
+    setPaginaActual(numeroPagina);
+  };
 
   return (
     <div className={styles.app}>
@@ -282,13 +338,83 @@ function ProductosPage() {
             )}
           </div>
 
+          {/* Controles de paginación superior */}
+          {productosOrdenados.length > 0 && (
+            <div className={styles.paginacionInfo}>
+              <span className={styles.textoInfo}>
+                Mostrando {indicePrimero + 1}-{Math.min(indiceUltimo, productosOrdenados.length)} de {productosOrdenados.length} productos
+              </span>
+              <select
+                value={productosPorPagina}
+                onChange={handleProductosPorPaginaChange}
+                className={styles.selectPorPagina}
+              >
+                <option value="5">5 por página</option>
+                <option value="10">10 por página</option>
+                <option value="20">20 por página</option>
+                <option value="50">50 por página</option>
+              </select>
+            </div>
+          )}
+
           {/* Lista de productos */}
           <ProductoLista
-            productos={productosOrdenados}
+            productos={productosPaginados}
             onProductoActualizado={handleProductoActualizado}
             onProductoEliminado={handleProductoEliminado}
             cargando={cargando}
           />
+
+          {/* Controles de paginación inferior */}
+          {totalPaginas > 1 && (
+            <div className={styles.paginacion}>
+              <button
+                onClick={paginaAnterior}
+                disabled={paginaActual === 1}
+                className={styles.btnPaginacion}
+              >
+                ← Anterior
+              </button>
+
+              <div className={styles.numeroPaginas}>
+                {[...Array(totalPaginas)].map((_, index) => {
+                  const numeroPagina = index + 1;
+                  // Mostrar solo algunas páginas alrededor de la actual
+                  if (
+                    numeroPagina === 1 ||
+                    numeroPagina === totalPaginas ||
+                    (numeroPagina >= paginaActual - 1 && numeroPagina <= paginaActual + 1)
+                  ) {
+                    return (
+                      <button
+                        key={numeroPagina}
+                        onClick={() => irAPagina(numeroPagina)}
+                        className={`${styles.btnNumeroPagina} ${
+                          paginaActual === numeroPagina ? styles.paginaActiva : ''
+                        }`}
+                      >
+                        {numeroPagina}
+                      </button>
+                    );
+                  } else if (
+                    numeroPagina === paginaActual - 2 ||
+                    numeroPagina === paginaActual + 2
+                  ) {
+                    return <span key={numeroPagina} className={styles.puntosSuspensivos}>...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={paginaSiguiente}
+                disabled={paginaActual === totalPaginas}
+                className={styles.btnPaginacion}
+              >
+                Siguiente →
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

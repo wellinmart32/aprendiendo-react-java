@@ -147,3 +147,147 @@
     min-width: auto;
   }
 }
+
+/* Estilos de paginación */
+
+/* Información de paginación superior */
+.paginacionInfo {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.textoInfo {
+  color: #666;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.selectPorPagina {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
+  background: white;
+  transition: border-color 0.3s;
+}
+
+.selectPorPagina:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* Controles de paginación */
+.paginacion {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.numeroPaginas {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btnPaginacion {
+  padding: 10px 20px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.btnPaginacion:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.btnPaginacion:active {
+  transform: translateY(0);
+}
+
+.btnPaginacion:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btnNumeroPagina {
+  padding: 8px 14px;
+  background: white;
+  color: #475569;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 40px;
+}
+
+.btnNumeroPagina:hover {
+  background: #f1f5f9;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.paginaActiva {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.paginaActiva:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: white;
+}
+
+.puntosSuspensivos {
+  color: #94a3b8;
+  font-weight: bold;
+  padding: 0 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .paginacionInfo {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .paginacion {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .numeroPaginas {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btnPaginacion {
+    width: 100%;
+  }
+}
