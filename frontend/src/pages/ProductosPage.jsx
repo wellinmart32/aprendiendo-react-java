@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
 import productoService from '../services/productoService';
 import ProductoFormulario from '../components/productos/ProductoFormulario';
 import ProductoLista from '../components/productos/ProductoLista';
@@ -15,6 +16,8 @@ function ProductosPage() {
   const [busqueda, setBusqueda] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('');
   const [soloConStock, setSoloConStock] = useState(false);
+  // Estado para ordenamiento
+  const [ordenamiento, setOrdenamiento] = useState('');
   // Estado para indicar si se están cargando los productos
   const [cargando, setCargando] = useState(false);
   // Estado para almacenar categorías únicas
@@ -37,7 +40,7 @@ function ProductosPage() {
       setCategorias(categoriasUnicas);
     } catch (error) {
       console.error('Error al cargar productos:', error);
-      alert('Error al cargar los productos');
+      toast.error('❌ Error al cargar los productos');
     } finally {
       setCargando(false);
     }
@@ -71,11 +74,41 @@ function ProductosPage() {
       setProductos(datos);
     } catch (error) {
       console.error('Error al filtrar productos:', error);
-      alert('Error al filtrar productos');
+      toast.error('❌ Error al filtrar productos');
     } finally {
       setCargando(false);
     }
   }, [busqueda, categoriaFiltro, soloConStock]);
+
+  /**
+   * Ordena los productos según el criterio seleccionado
+   */
+  const ordenarProductos = useCallback((productosParaOrdenar) => {
+    if (!ordenamiento) return productosParaOrdenar;
+
+    const productosOrdenados = [...productosParaOrdenar];
+
+    switch (ordenamiento) {
+      case 'nombre-asc':
+        return productosOrdenados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+      case 'nombre-desc':
+        return productosOrdenados.sort((a, b) => b.nombre.localeCompare(a.nombre));
+      case 'precio-asc':
+        return productosOrdenados.sort((a, b) => a.precio - b.precio);
+      case 'precio-desc':
+        return productosOrdenados.sort((a, b) => b.precio - a.precio);
+      case 'stock-asc':
+        return productosOrdenados.sort((a, b) => a.stock - b.stock);
+      case 'stock-desc':
+        return productosOrdenados.sort((a, b) => b.stock - a.stock);
+      case 'fecha-asc':
+        return productosOrdenados.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
+      case 'fecha-desc':
+        return productosOrdenados.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+      default:
+        return productosOrdenados;
+    }
+  }, [ordenamiento]);
 
   /**
    * useEffect para cargar los productos cuando el componente se monta
@@ -99,7 +132,7 @@ function ProductosPage() {
     filtrarProductos();
   };
 
-/**
+  /**
    * Maneja cuando se actualiza un producto
    * @param {Object} productoActualizado - El producto con los datos actualizados
    */
@@ -111,7 +144,7 @@ function ProductosPage() {
       cargarProductos();
     }
   };
-  
+
   /**
    * Maneja cuando se elimina un producto
    * @param {number} productoId - ID del producto eliminado
@@ -145,13 +178,24 @@ function ProductosPage() {
   };
 
   /**
-   * Limpia todos los filtros
+   * Maneja el cambio en el ordenamiento
+   */
+  const handleOrdenamientoChange = (e) => {
+    setOrdenamiento(e.target.value);
+  };
+
+  /**
+   * Limpia todos los filtros y ordenamiento
    */
   const limpiarFiltros = () => {
     setBusqueda('');
     setCategoriaFiltro('');
     setSoloConStock(false);
+    setOrdenamiento('');
   };
+
+  // Aplicar ordenamiento a los productos
+  const productosOrdenados = ordenarProductos(productos);
 
   return (
     <div className={styles.app}>
@@ -195,6 +239,25 @@ function ProductosPage() {
               </select>
             </div>
 
+            {/* Ordenamiento */}
+            <div className={styles.filtroItem}>
+              <select
+                value={ordenamiento}
+                onChange={handleOrdenamientoChange}
+                className={styles.selectOrdenamiento}
+              >
+                <option value="">🔄 Ordenar por...</option>
+                <option value="nombre-asc">Nombre (A-Z)</option>
+                <option value="nombre-desc">Nombre (Z-A)</option>
+                <option value="precio-asc">Precio (Menor a Mayor)</option>
+                <option value="precio-desc">Precio (Mayor a Menor)</option>
+                <option value="stock-asc">Stock (Menor a Mayor)</option>
+                <option value="stock-desc">Stock (Mayor a Menor)</option>
+                <option value="fecha-desc">Más recientes</option>
+                <option value="fecha-asc">Más antiguos</option>
+              </select>
+            </div>
+
             {/* Filtro por stock */}
             <div className={styles.filtroItem}>
               <label className={styles.checkboxLabel}>
@@ -209,19 +272,19 @@ function ProductosPage() {
             </div>
 
             {/* Botón limpiar filtros */}
-            {(busqueda || categoriaFiltro || soloConStock) && (
+            {(busqueda || categoriaFiltro || soloConStock || ordenamiento) && (
               <button 
                 onClick={limpiarFiltros}
                 className={styles.btnLimpiarFiltros}
               >
-                ✕ Limpiar filtros
+                ✕ Limpiar todo
               </button>
             )}
           </div>
 
           {/* Lista de productos */}
           <ProductoLista
-            productos={productos}
+            productos={productosOrdenados}
             onProductoActualizado={handleProductoActualizado}
             onProductoEliminado={handleProductoEliminado}
             cargando={cargando}
