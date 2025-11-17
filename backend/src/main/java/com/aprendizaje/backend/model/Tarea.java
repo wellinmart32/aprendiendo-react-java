@@ -63,6 +63,14 @@ public class Tarea {
         this.fechaCreacion = LocalDateTime.now();
     }
     
+    // Constructor con parámetros para tests y creación manual
+    public Tarea(String titulo, String descripcion, Boolean completada) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.completada = completada;
+        this.fechaCreacion = LocalDateTime.now();
+    }
+    
     // ========== GETTERS Y SETTERS ==========
     
     /**
