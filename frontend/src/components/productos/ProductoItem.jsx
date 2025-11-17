@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import productoService from '../../services/productoService';
 import Modal from '../common/Modal';
+import ConfirmModal from '../common/ConfirmModal';
 import ProductoFormularioEditar from './ProductoFormularioEditar';
 import styles from './ProductoItem.module.css';
-import { toast } from 'react-toastify';
 
 /**
  * Componente que representa un producto individual
@@ -12,18 +13,15 @@ import { toast } from 'react-toastify';
  * @param {Function} onProductoEliminado - Callback cuando se elimina el producto
  */
 function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) {
-  // Estado para controlar si el modal está abierto
-  const [modalAbierto, setModalAbierto] = useState(false);
+  // Estado para controlar si el modal de edición está abierto
+  const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
+  // Estado para controlar si el modal de confirmación está abierto
+  const [modalConfirmarAbierto, setModalConfirmarAbierto] = useState(false);
 
-/**
+  /**
    * Elimina el producto después de confirmación
    */
   const handleEliminar = async () => {
-    // Pedir confirmación
-    if (!window.confirm('¿Estás seguro de eliminar este producto?')) {
-      return;
-    }
-
     try {
       await productoService.eliminar(producto.id);
       
@@ -44,15 +42,29 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
   /**
    * Abre el modal de edición
    */
-  const handleAbrirModal = () => {
-    setModalAbierto(true);
+  const handleAbrirModalEditar = () => {
+    setModalEditarAbierto(true);
   };
 
   /**
    * Cierra el modal de edición
    */
-  const handleCerrarModal = () => {
-    setModalAbierto(false);
+  const handleCerrarModalEditar = () => {
+    setModalEditarAbierto(false);
+  };
+
+  /**
+   * Abre el modal de confirmación de eliminación
+   */
+  const handleAbrirModalConfirmar = () => {
+    setModalConfirmarAbierto(true);
+  };
+
+  /**
+   * Cierra el modal de confirmación
+   */
+  const handleCerrarModalConfirmar = () => {
+    setModalConfirmarAbierto(false);
   };
 
   /**
@@ -65,7 +77,7 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
     }
     
     // Cerrar el modal
-    setModalAbierto(false);
+    setModalEditarAbierto(false);
   };
 
   /**
@@ -127,14 +139,14 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
         
         <div className={styles.acciones}>
           <button
-            onClick={handleAbrirModal}
+            onClick={handleAbrirModalEditar}
             className={`${styles.btn} ${styles.btnEditar}`}
           >
             ✏️ Editar
           </button>
           
           <button
-            onClick={handleEliminar}
+            onClick={handleAbrirModalConfirmar}
             className={`${styles.btn} ${styles.btnEliminar}`}
           >
             🗑️ Eliminar
@@ -144,16 +156,27 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
 
       {/* Modal de edición */}
       <Modal 
-        isOpen={modalAbierto}
-        onClose={handleCerrarModal}
+        isOpen={modalEditarAbierto}
+        onClose={handleCerrarModalEditar}
         titulo="Editar Producto"
       >
         <ProductoFormularioEditar
           producto={producto}
           onProductoActualizado={handleProductoActualizado}
-          onCancelar={handleCerrarModal}
+          onCancelar={handleCerrarModalEditar}
         />
       </Modal>
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={modalConfirmarAbierto}
+        onClose={handleCerrarModalConfirmar}
+        onConfirm={handleEliminar}
+        titulo="¿Eliminar producto?"
+        mensaje={`¿Estás seguro de que deseas eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`}
+        textoConfirmar="Sí, eliminar"
+        textoCancelar="Cancelar"
+      />
     </>
   );
 }
