@@ -3,6 +3,7 @@ import productoService from '../../services/productoService';
 import Modal from '../common/Modal';
 import ProductoFormularioEditar from './ProductoFormularioEditar';
 import styles from './ProductoItem.module.css';
+import { toast } from 'react-toastify';
 
 /**
  * Componente que representa un producto individual
@@ -14,7 +15,7 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
   // Estado para controlar si el modal está abierto
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  /**
+/**
    * Elimina el producto después de confirmación
    */
   const handleEliminar = async () => {
@@ -26,6 +27,9 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
     try {
       await productoService.eliminar(producto.id);
       
+      // Notificación de éxito
+      toast.success(`✅ Producto "${producto.nombre}" eliminado exitosamente`);
+      
       // Notificar al componente padre
       if (onProductoEliminado) {
         onProductoEliminado(producto.id);
@@ -33,7 +37,7 @@ function ProductoItem({ producto, onProductoActualizado, onProductoEliminado }) 
 
     } catch (error) {
       console.error('Error al eliminar producto:', error);
-      alert('Error al eliminar el producto');
+      toast.error('❌ Error al eliminar el producto');
     }
   };
 

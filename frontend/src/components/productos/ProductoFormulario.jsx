@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import productoService from '../../services/productoService';
 import styles from './ProductoFormulario.module.css';
 
@@ -21,19 +22,19 @@ function ProductoFormulario({ onProductoCreado }) {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevenir recarga de página
 
-    // Validar que los campos obligatorios no estén vacíos
+    // Validar que el nombre no esté vacío
     if (!nombre.trim()) {
-      alert('El nombre es obligatorio');
+      toast.error('❌ El nombre es obligatorio');
       return;
     }
 
     if (!precio || parseFloat(precio) <= 0) {
-      alert('El precio debe ser mayor a 0');
+      toast.error('❌ El precio debe ser mayor a 0');
       return;
     }
 
     if (!stock || parseInt(stock) < 0) {
-      alert('El stock no puede ser negativo');
+      toast.error('❌ El stock no puede ser negativo');
       return;
     }
 
@@ -56,6 +57,9 @@ function ProductoFormulario({ onProductoCreado }) {
       setStock('');
       setCategoria('');
 
+      // Notificación de éxito
+      toast.success(`✅ Producto "${nuevoProducto.nombre}" creado exitosamente`);
+
       // Notificar al componente padre que se creó un producto
       if (onProductoCreado) {
         onProductoCreado(nuevoProducto);
@@ -63,7 +67,7 @@ function ProductoFormulario({ onProductoCreado }) {
 
     } catch (error) {
       console.error('Error al crear producto:', error);
-      alert('Error al crear el producto. Intenta nuevamente.');
+      toast.error('❌ Error al crear el producto. Intenta nuevamente.');
     } finally {
       setCargando(false);
     }

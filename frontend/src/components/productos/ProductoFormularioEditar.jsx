@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import productoService from '../../services/productoService';
 import styles from './ProductoFormulario.module.css';
 
@@ -36,17 +37,17 @@ function ProductoFormularioEditar({ producto, onProductoActualizado, onCancelar 
 
     // Validar que los campos obligatorios no estén vacíos
     if (!nombre.trim()) {
-      alert('El nombre es obligatorio');
+      toast.error('❌ El nombre es obligatorio');
       return;
     }
 
     if (!precio || parseFloat(precio) <= 0) {
-      alert('El precio debe ser mayor a 0');
+      toast.error('❌ El precio debe ser mayor a 0');
       return;
     }
 
     if (!stock || parseInt(stock) < 0) {
-      alert('El stock no puede ser negativo');
+      toast.error('❌ El stock no puede ser negativo');
       return;
     }
 
@@ -62,6 +63,9 @@ function ProductoFormularioEditar({ producto, onProductoActualizado, onCancelar 
         categoria: categoria.trim()
       });
 
+      // Notificación de éxito
+      toast.success(`✅ Producto "${productoActualizado.nombre}" actualizado exitosamente`);
+
       // Notificar al componente padre que se actualizó el producto
       if (onProductoActualizado) {
         onProductoActualizado(productoActualizado);
@@ -69,7 +73,7 @@ function ProductoFormularioEditar({ producto, onProductoActualizado, onCancelar 
 
     } catch (error) {
       console.error('Error al actualizar producto:', error);
-      alert('Error al actualizar el producto. Intenta nuevamente.');
+      toast.error('❌ Error al actualizar el producto. Intenta nuevamente.');
     } finally {
       setCargando(false);
     }

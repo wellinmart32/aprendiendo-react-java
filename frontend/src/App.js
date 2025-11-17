@@ -1,5 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/common/Navbar';
 import HomePage from './pages/HomePage';
 import TareasPage from './pages/TareasPage';
@@ -26,6 +28,20 @@ function App() {
         {/* Ruta de productos */}
         <Route path="/productos" element={<ProductosPage />} />
       </Routes>
+
+      {/* Contenedor de notificaciones toast */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Router>
   );
 }
